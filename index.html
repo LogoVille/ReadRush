@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Tachistoscopio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      height: 100vh;
+      background-color: #FFFFCC;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #header {
+      text-align: center;
+      margin-top: 5px;
+    }
+
+    #header h1 {
+      margin: 0;
+      font-size: 85px;
+      font-family:"Papyrus"; 
+    }
+
+    #header p {
+      font-size: 13px;
+      margin-top: 5px;
+      font-weight: bold;
+      font-style: italic;
+      color: black;
+      font-family:"Papyrus";
+    }
+
+    #container {
+      text-align: center;
+      padding: 80px;
+      max-width: 900px;
+      margin-top: 25px; 
+    }
+
+    #main-interface, #countdown, #sillaba-container, #end-message {
+      display: none;
+    }
+
+    #sillaba {
+      font-size: 120px;
+      font-weight: bold;
+    }
+
+    #countdown {
+      font-size: 100px;
+      font-weight: bold;
+    }
+
+    #end-message {
+      font-size: 40px;
+      color: green;
+      margin-top: 30px;
+      font-family:"Papyrus"; 
+    }
+
+    #pauseBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      z-index: 1000;
+      display: none;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header">
+    <h1>ReadRush</h1>
+    <p>Log. Rosalia Di Leve e Studente Log. Micol Borghi</p>
+  </div>
+
+  <button id="pauseBtn" onclick="togglePause()">⏸ Pausa</button>
+
+  <div id="container">
+    <div id="setup">
+      <label style="font-size: 25px">Inserisci le sillabe (separate da virgola):<br>
+        <input type="text" id="sillabeInput" style="width: 500px; height: 60px; font-size: 25px">
+      </label>
+      <br><br>
+      <label style="font-size: 25px">Tempo di visualizzazione (ms):<br>
+        <input type="number" id="displayTime" value="500" style="font-size: 25px">
+      </label>
+      <br><br>
+      <label style="font-size: 25px">Intertempo tra sillabe (ms):<br>
+        <input type="number" id="interTime" value="300" style="font-size: 25px">
+      </label>
+      <br><br>
+      <button onclick="start()" style="font-size: 25px">Avvia</button>
+    </div>
+
+    <div id="countdown">3</div>
+
+    <div id="sillaba-container">
+      <div id="sillaba"></div>
+    </div>
+
+    <div id="end-message">OTTIMO LAVORO!</div>
+  </div>
+
+  <script>
+    let sillabe = [];
+    let displayTime = 500;
+    let interTime = 300;
+    let sessionDuration = 10 * 60 * 1000;
+    let sessionStartTime;
+    let timeLeft = sessionDuration;
+    let sessionTimeout;
+    let paused = false;
+    let running = false;
+    let nextTimeout;
+
+    function start() {
+      document.getElementById("header").style.display = "none"; // Nasconde titolo e sottotitolo
+      document.getElementById("setup").style.display = "none";
+      document.getElementById("countdown").style.display = "block";
+
+      sillabe = document.getElementById("sillabeInput").value.split(",").map(s => s.trim()).filter(Boolean);
+      displayTime = parseInt(document.getElementById("displayTime").value);
+      interTime = parseInt(document.getElementById("interTime").value);
+
+      let count = 3;
+      const countdownEl = document.getElementById("countdown");
+      const countdownInterval = setInterval(() => {
+        countdownEl.textContent = count;
+        count--;
+        if (count < 0) {
+          clearInterval(countdownInterval);
+          countdownEl.style.display = "none";
+          document.getElementById("sillaba-container").style.display = "block";
+          document.getElementById("pauseBtn").style.display = "inline-block";
+          running = true;
+          sessionStartTime = Date.now();
+          sessionTimeout = setTimeout(endSession, timeLeft);
+          startPresentation();
+        }
+      }, 1000);
+    }
+
+    function startPresentation() {
+      const sillabaEl = document.getElementById("sillaba");
+
+      function loop() {
+        if (!running || paused) return;
+
+        const randIndex = Math.floor(Math.random() * sillabe.length);
+        sillabaEl.textContent = sillabe[randIndex];
+
+        nextTimeout = setTimeout(() => {
+          sillabaEl.textContent = "";
+          nextTimeout = setTimeout(loop, interTime);
+        }, displayTime);
+      }
+
+      loop();
+    }
+
+    function togglePause() {
+      const btn = document.getElementById("pauseBtn");
+
+      if (!paused) {
+        paused = true;
+        clearTimeout(nextTimeout);
+        clearTimeout(sessionTimeout);
+        timeLeft -= Date.now() - sessionStartTime;
+        btn.textContent = "▶️ Riprendi";
+      } else {
+        paused = false;
+        btn.textContent = "⏸ Pausa";
+        sessionStartTime = Date.now();
+        sessionTimeout = setTimeout(endSession, timeLeft);
+        startPresentation();
+      }
+    }
+
+    function endSession() {
+      running = false;
+      document.getElementById("sillaba-container").style.display = "none";
+      document.getElementById("pauseBtn").style.display = "none";
+      document.getElementById("end-message").style.display = "block";
+    }
+      </script>
+
+</body>
+</html>
