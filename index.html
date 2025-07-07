@@ -103,6 +103,7 @@
       </label>
       <br><br>
       <button onclick="start()" style="font-size: 25px">Avvia</button>
+      <button onclick="salvaDati()" style="font-size: 25px; margin-left: 20px;">💾 Salva</button>
     </div>
 
     <div id="countdown">3</div>
@@ -195,6 +196,36 @@
       document.getElementById("pauseBtn").style.display = "none";
       document.getElementById("end-message").style.display = "block";
     }
+
+    
+function salvaDati() {
+  const sillabeVal = document.getElementById("sillabeInput").value;
+  const displayTimeVal = document.getElementById("displayTime").value;
+  const interTimeVal = document.getElementById("interTime").value;
+
+  localStorage.setItem("sillabe", sillabeVal);
+  localStorage.setItem("displayTime", displayTimeVal);
+  localStorage.setItem("interTime", interTimeVal);
+
+  alert("Dati salvati!");
+}
+
+
+window.onload = function() {
+  const sillabeSalvate = localStorage.getItem("sillabe");
+  const displayTimeSalvato = localStorage.getItem("displayTime");
+  const interTimeSalvato = localStorage.getItem("interTime");
+
+  if (sillabeSalvate !== null) {
+    document.getElementById("sillabeInput").value = sillabeSalvate;
+  }
+  if (displayTimeSalvato !== null) {
+    document.getElementById("displayTime").value = displayTimeSalvato;
+  }
+  if (interTimeSalvato !== null) {
+    document.getElementById("interTime").value = interTimeSalvato;
+  }
+};
       </script>
 
 </body>
