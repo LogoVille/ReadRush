@@ -87,6 +87,8 @@
   </div>
 
   <button id="pauseBtn" onclick="togglePause()">⏸ Pausa</button>
+  <button id="homeBtn" onclick="returnToHome()" style="display:none; position: fixed; top: 20px; left: 20px; padding: 10px 20px; font-size: 18px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">🔙 Torna all'inizio</button>
+
 
   <div id="container">
     <div id="setup">
@@ -102,7 +104,7 @@
         <input type="number" id="interTime" value="300" style="font-size: 25px">
       </label>
       <br><br>
-      <button onclick="start()" style="font-size: 25px; background-color: #04AA6D; color: white;">Avvia</button>
+      <button onclick="start()" style="font-size: 25px; background-color: #04AA6D; color:white;">Avvia</button>
       <button onclick="salvaDati()" style="font-size: 25px; margin-left: 20px;">💾 Salva</button>
     </div>
 
@@ -146,6 +148,7 @@
           countdownEl.style.display = "none";
           document.getElementById("sillaba-container").style.display = "block";
           document.getElementById("pauseBtn").style.display = "inline-block";
+          document.getElementById("homeBtn").style.display = "inline-block";
           running = true;
           sessionStartTime = Date.now();
           sessionTimeout = setTimeout(endSession, timeLeft);
@@ -194,8 +197,27 @@
       running = false;
       document.getElementById("sillaba-container").style.display = "none";
       document.getElementById("pauseBtn").style.display = "none";
+      document.getElementById("homeBtn").style.display = "inline-block";
       document.getElementById("end-message").style.display = "block";
     }
+
+    function returnToHome() {
+  running = false;
+  paused = false;
+  clearTimeout(nextTimeout);
+  clearTimeout(sessionTimeout);
+
+  document.getElementById("header").style.display = "block";
+  document.getElementById("setup").style.display = "block";
+  document.getElementById("countdown").style.display = "none";
+  document.getElementById("sillaba-container").style.display = "none";
+  document.getElementById("pauseBtn").style.display = "none";
+  document.getElementById("homeBtn").style.display = "none";
+  document.getElementById("end-message").style.display = "none";
+
+  timeLeft = sessionDuration;
+}
+
 
     
 function salvaDati() {
